@@ -2,28 +2,10 @@ use tauri::{Runtime, Window};
 
 pub trait WindowExt {
     #[cfg(target_os = "macos")]
-    fn set_transparent_titlebar(&self, transparent: bool);
     fn position_traffic_lights(&self, x: f64, y: f64);
 }
 
 impl<R: Runtime> WindowExt for Window<R> {
-    #[cfg(target_os = "macos")]
-    fn set_transparent_titlebar(&self, transparent: bool) {
-        use cocoa::appkit::{NSWindow, NSWindowTitleVisibility};
-
-        let window = self.ns_window().unwrap() as cocoa::base::id;
-
-        unsafe {
-            window.setTitleVisibility_(NSWindowTitleVisibility::NSWindowTitleHidden);
-
-            if transparent {
-                window.setTitlebarAppearsTransparent_(cocoa::base::YES);
-            } else {
-                window.setTitlebarAppearsTransparent_(cocoa::base::NO);
-            }
-        }
-    }
-
     #[cfg(target_os = "macos")]
     fn position_traffic_lights(&self, x: f64, y: f64) {
         use cocoa::appkit::{NSView, NSWindow, NSWindowButton};
