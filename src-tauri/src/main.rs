@@ -12,7 +12,6 @@ use window_shadows::set_shadow;
 #[macro_use]
 extern crate objc;
 
-// TODO: EXPIRING BUILDS
 // TODO: cleanAppCacheOnCrash
 // TODO: LOGGING
 // TODO: APP STATS - CHECK src/main/stats.ts
@@ -28,6 +27,10 @@ extern crate objc;
 // TODO: ANALYTICS
 
 fn main() {
+    if build_is_expired() {
+        return;
+    }
+
     tauri::Builder::default()
         .setup(|app| {
             let mut main_window_builder =
@@ -95,7 +98,7 @@ fn get_app_name() -> String {
     config::AppConfig::instance().app_name.clone()
 }
 
-fn check_if_build_expired() -> bool {
+fn build_is_expired() -> bool {
     if config::AppConfig::instance().expiry_date > 0 {
         let now = chrono::Utc::now();
         let expiry_date = chrono::NaiveDateTime::from_timestamp_opt(
@@ -105,7 +108,6 @@ fn check_if_build_expired() -> bool {
 
         if let Some(expiry_date) = expiry_date {
             if now > expiry_date.and_utc() {
-                println!("Build expired!");
                 return true;
             }
         }

@@ -15,9 +15,9 @@ rust-version = "1.60"
 tauri-build = { version = "1.4.0", features = [] }
 
 [dependencies]
-serde_json = "1.0"
+serde_json = "1.0.94"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.4.0", features = [ "os-all", "path-all", "fs-rename-file", "fs-remove-file", "fs-write-file", "fs-remove-dir", "fs-exists", "fs-create-dir", "fs-copy-file", "fs-read-dir", "fs-read-file", "window-unmaximize", "window-close", "window-minimize", "window-hide", "window-maximize", "window-start-dragging", "window-show", "window-unminimize"] }
+tauri = { version = "1.4.0", features = [ "dialog-message", "os-all", "path-all", "fs-rename-file", "fs-remove-file", "fs-write-file", "fs-remove-dir", "fs-exists", "fs-create-dir", "fs-copy-file", "fs-read-dir", "fs-read-file", "window-unmaximize", "window-close", "window-minimize", "window-hide", "window-maximize", "window-start-dragging", "window-show", "window-unminimize"] }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 window-shadows = "0.2.1"
 once_cell = "1.18.0"
@@ -35,3 +35,4 @@ objc = "0.2.7"
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+updater = ["tauri/updater"]
