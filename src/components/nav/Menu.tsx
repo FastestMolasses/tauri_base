@@ -15,6 +15,7 @@ import {
     MenubarTrigger,
 } from '@/components/ui/menubar';
 import platform from '@/services/platform';
+import { appWindow } from '@tauri-apps/api/window';
 
 export function Menu() {
     return (
@@ -227,6 +228,7 @@ export function Menu() {
                 <button
                     id='titlebar-minimize'
                     className='p-2 hover:bg-[#161a1d] focus:outline-none active:bg-[#0e1012]'
+                    onClick={() => appWindow.minimize()}
                 >
                     <svg
                         xmlns='http://www.w3.org/2000/svg'
@@ -240,6 +242,15 @@ export function Menu() {
                 <button
                     id='titlebar-maximize'
                     className='p-2 hover:bg-[#161a1d] focus:outline-none active:bg-[#0e1012]'
+                    onClick={() => {
+                        appWindow.isMaximized().then((isMaximized) => {
+                            if (isMaximized) {
+                                appWindow.unmaximize();
+                            } else {
+                                appWindow.maximize();
+                            }
+                        });
+                    }}
                 >
                     <svg
                         xmlns='http://www.w3.org/2000/svg'
@@ -256,6 +267,7 @@ export function Menu() {
                 <button
                     id='titlebar-close'
                     className='p-2 hover:bg-[#161a1d] focus:outline-none active:bg-[#0e1012]'
+                    onClick={() => appWindow.close()}
                 >
                     <svg
                         xmlns='http://www.w3.org/2000/svg'
