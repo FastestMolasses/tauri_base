@@ -13,17 +13,30 @@ import './assets/scss/main.scss';
 function App() {
     return (
         <>
-            {/* Menu bar */}
-            {platform.osType === 'windows' && (
-                // TODO: DONT HARDCODE THIS
-                <div className='mb-[36px]'>
-                    <Menu />
+            {/* Drag region for macOS menu bar */}
+            {platform.osType === 'macOS' && (
+                <div
+                    className='h-8 bg-black border-b text-center fixed top-0 left-0 right-0 z-50'
+                    data-tauri-drag-region
+                >
+                    <p className='h-full flex items-center justify-center pointer-events-none text-xs text-gray-500'>
+                        Project title
+                    </p>
                 </div>
             )}
 
+            {/* Menu bar */}
+            {platform.osType === 'windows' && <Menu />}
+
             <MemoryRouter>
                 <Routes>
-                    <Route element={<MainNav />}>
+                    <Route
+                        element={
+                            <div className='mt-9'>
+                                <MainNav />
+                            </div>
+                        }
+                    >
                         <Route index element={<Home />} />
                         <Route path={Paths.Settings} element={<Settings />} />
                     </Route>
