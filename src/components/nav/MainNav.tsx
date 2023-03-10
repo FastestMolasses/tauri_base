@@ -5,7 +5,7 @@ import { NavLinks } from '@/components/nav/NavLinks';
 
 const MainNav = () => {
     return (
-        <div className='flex-col flex'>
+        <div className='flex-col flex overflow-y-auto overflow-x-hidden'>
             {/* Top Nav */}
             <div className='border-b'>
                 <div className='flex h-16 items-center px-4'>

@@ -18,7 +18,7 @@ import platform from '@/services/platform';
 
 export function Menu() {
     return (
-        <>
+        <div className='fixed top-0 left-0 right-0 z-50' id='menu'>
             <Menubar
                 className='rounded-none border-0 border-b px-2 lg:px-4'
                 data-tauri-drag-region
@@ -223,8 +223,11 @@ export function Menu() {
                 </MenubarMenu>
             </Menubar>
 
-            <div className='titlebar'>
-                <div className='titlebar-button' id='titlebar-minimize'>
+            <div className='flex justify-end absolute top-0 right-0'>
+                <button
+                    id='titlebar-minimize'
+                    className='p-2 hover:bg-[#161a1d] focus:outline-none active:bg-[#0e1012]'
+                >
                     <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='1em'
@@ -233,8 +236,11 @@ export function Menu() {
                     >
                         <path fill='currentColor' d='M20 14H4v-4h16' />
                     </svg>
-                </div>
-                <div className='titlebar-button' id='titlebar-maximize'>
+                </button>
+                <button
+                    id='titlebar-maximize'
+                    className='p-2 hover:bg-[#161a1d] focus:outline-none active:bg-[#0e1012]'
+                >
                     <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='1em'
@@ -246,8 +252,11 @@ export function Menu() {
                             d='M4 4h16v16H4V4m2 4v10h12V8H6Z'
                         />
                     </svg>
-                </div>
-                <div className='titlebar-button' id='titlebar-close'>
+                </button>
+                <button
+                    id='titlebar-close'
+                    className='p-2 hover:bg-[#161a1d] focus:outline-none active:bg-[#0e1012]'
+                >
                     <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='1em'
@@ -259,8 +268,8 @@ export function Menu() {
                             d='M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z'
                         />
                     </svg>
-                </div>
+                </button>
             </div>
-        </>
+        </div>
     );
 }

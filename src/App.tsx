@@ -13,7 +13,14 @@ import './assets/scss/main.scss';
 function App() {
     return (
         <>
-            {platform.osType === 'windows' && <Menu />}
+            {/* Menu bar */}
+            {platform.osType === 'windows' && (
+                // TODO: DONT HARDCODE THIS
+                <div className='mb-[36px]'>
+                    <Menu />
+                </div>
+            )}
+
             <MemoryRouter>
                 <Routes>
                     <Route element={<MainNav />}>
