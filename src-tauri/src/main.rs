@@ -71,15 +71,18 @@ fn main() {
             Ok(())
         })
         .on_window_event(|e| {
-            let apply_offset = || {
-                let win = e.window();
-                win.position_traffic_lights(10., 16.);
-            };
-            match e.event() {
-                WindowEvent::Resized(..) => apply_offset(),
-                WindowEvent::ThemeChanged(..) => apply_offset(),
-                _ => {}
-            };
+            #[cfg(target_os = "macos")]
+            {
+                let apply_offset = || {
+                    let win = e.window();
+                    win.position_traffic_lights(10., 16.);
+                };
+                match e.event() {
+                    WindowEvent::Resized(..) => apply_offset(),
+                    WindowEvent::ThemeChanged(..) => apply_offset(),
+                    _ => {}
+                };
+            }
         })
         .invoke_handler(tauri::generate_handler![get_app_name])
         .plugin(tauri_plugin_window_state::Builder::default().build())
