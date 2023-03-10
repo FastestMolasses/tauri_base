@@ -1,0 +1,19 @@
+$n1: #090b10;
+$n2: #0b0c12;
+$n3: #0f1119;
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: $n3 $n1;
+}
+*::-webkit-scrollbar {
+    width: 0px;
+    height: 8px;
+}
+*::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+*::-webkit-scrollbar-thumb {
+    background-color: transparentize($n2, 0.6%);
+    border-radius: 2px;
+}
