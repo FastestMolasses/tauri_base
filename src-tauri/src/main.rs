@@ -3,17 +3,19 @@
 
 mod config;
 mod window_ext;
+mod file_util;
+mod json_util;
 
-use tauri::WindowEvent;
-use window_ext::WindowExt;
 use window_shadows::set_shadow;
 
 #[cfg(target_os = "macos")]
 #[macro_use]
 extern crate objc;
 
-// TODO: cleanAppCacheOnCrash
+// TODO: FILE UTILS
+// TODO: APP UPDATER
 // TODO: LOGGING
+// TODO: cleanAppCacheOnCrash
 // TODO: APP STATS - CHECK src/main/stats.ts
 // TODO: SETTINGS PAGE UI
 // TODO: ALWAYS ON TOP OPTION
@@ -21,8 +23,6 @@ extern crate objc;
 // TODO: ALTERNATIVE TO ELECTRON'S crashReporter
 // TODO: CRASH HANDLER
 // TODO: REPORTS HANDLER - CHECK src/main/reports-hanlder.ts
-// TODO: FILE UTILS
-// TODO: APP UPDATER
 // TODO: APP MENU
 // TODO: ANALYTICS
 
@@ -31,62 +31,68 @@ fn main() {
         return;
     }
 
-    tauri::Builder::default()
-        .setup(|app| {
-            let mut main_window_builder =
-                tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("index.html".into()));
+    let mut app_builder = tauri::Builder::default();
 
-            #[cfg(target_os = "macos")]
-            {
-                main_window_builder = main_window_builder
-                    // Overlays the traffic lights on the window contents
-                    .title_bar_style(tauri::TitleBarStyle::Overlay)
-                    .decorations(true)
-                    .hidden_title(true);
-            }
+    // Setup windows
+    app_builder = app_builder.setup(|app| {
+        let mut main_window_builder =
+            tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("index.html".into()));
 
+        #[cfg(target_os = "macos")]
+        {
             main_window_builder = main_window_builder
-                .min_inner_size(800., 600.)
-                .inner_size(1400., 1000.)
-                .title(config::AppConfig::instance().app_name.clone())
-                .resizable(true);
+                // Overlays the traffic lights on the window contents
+                .title_bar_style(tauri::TitleBarStyle::Overlay)
+                .decorations(true)
+                .hidden_title(true);
+        }
 
-            let main_window = main_window_builder.build()?;
+        main_window_builder = main_window_builder
+            .min_inner_size(800., 600.)
+            .inner_size(1400., 1000.)
+            .title(config::AppConfig::instance().app_name.clone())
+            .resizable(true);
 
-            // Add native window shadows
-            set_shadow(&main_window, true).expect("Cannot set window shadows!");
+        let main_window = main_window_builder.build()?;
 
-            #[cfg(target_os = "windows")]
-            {
-                // Make the title bar invisible
-                let _ = main_window.set_decorations(false);
+        // Add native window shadows
+        set_shadow(&main_window, true).expect("Cannot set window shadows!");
+
+        #[cfg(target_os = "windows")]
+        {
+            // Make the title bar invisible
+            let _ = main_window.set_decorations(false);
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            // Adjust the traffic lights position
+            main_window.position_traffic_lights(10., 16.);
+        }
+
+        #[cfg(feature = "updater")]
+        tauri::updater::builder(app.handle()).should_install(|_current, _latest| true);
+
+        Ok(())
+    });
+
+    // Adjust the traffic lights position on window resizing
+    #[cfg(target_os = "macos")]
+    {
+        app_builder = app_builder.on_window_event(|e| {
+            let apply_offset = || {
+                let win = e.window();
+                win.position_traffic_lights(10., 16.);
+            };
+            match e.event() {
+                tauri::WindowEvent::Resized(..) => apply_offset(),
+                tauri::WindowEvent::ThemeChanged(..) => apply_offset(),
+                _ => {}
             }
+        });
+    }
 
-            #[cfg(target_os = "macos")]
-            {
-                // Adjust the traffic lights position
-                main_window.position_traffic_lights(10., 16.);
-            }
-
-            #[cfg(feature = "updater")]
-            tauri::updater::builder(app.handle()).should_install(|_current, _latest| true);
-
-            Ok(())
-        })
-        .on_window_event(|e| {
-            #[cfg(target_os = "macos")]
-            {
-                let apply_offset = || {
-                    let win = e.window();
-                    win.position_traffic_lights(10., 16.);
-                };
-                match e.event() {
-                    WindowEvent::Resized(..) => apply_offset(),
-                    WindowEvent::ThemeChanged(..) => apply_offset(),
-                    _ => {}
-                };
-            }
-        })
+    app_builder
         .invoke_handler(tauri::generate_handler![get_app_name])
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .run(tauri::generate_context!())
