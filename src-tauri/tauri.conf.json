@@ -86,7 +86,12 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": false,
+      "endpoints": [
+        "https://releases.myapp.com/{{target}}/{{arch}}/{{current_version}}"
+      ],
+      "dialog": false,
+      "pubkey": "YOUR_UPDATER_SIGNATURE_PUBKEY_HERE"
     }
   }
 }

@@ -3,14 +3,16 @@
 
 mod config;
 mod window_ext;
-mod file_util;
-mod json_util;
+// mod file_util;
+// mod json_util;
 
 use window_shadows::set_shadow;
 
 #[cfg(target_os = "macos")]
 #[macro_use]
 extern crate objc;
+#[cfg(target_os = "macos")]
+use crate::window_ext::WindowExt;
 
 // TODO: FILE UTILS
 // TODO: APP UPDATER
@@ -119,5 +121,5 @@ fn build_is_expired() -> bool {
         }
     }
 
-    return false;
+    false
 }
