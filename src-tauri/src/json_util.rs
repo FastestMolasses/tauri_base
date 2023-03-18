@@ -2,21 +2,22 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fs::{self, File};
 use std::io::{self, Read, Write};
-use std::path::Path;
 use serde::de::DeserializeOwned;
-use tauri::api::path::{resolve_path, BaseDirectory};
+use tauri::api::path::{resolve_path, BaseDirectory, app_local_data_dir};
+use tauri::PathResolver;
+use tauri::AppHandle;
 
-// Define a result type for easier error handling
+/// Define a result type for easier error handling
 type JsonUtilsResult<T> = Result<T, JsonUtilsError>;
 
-// Define custom error type
+/// Define custom error type
 #[derive(Debug)]
 enum JsonUtilsError {
     IoError(io::Error),
     SerdeJsonError(serde_json::Error),
 }
 
-// Implement the From trait to convert std::io::Error and serde_json::Error into JsonUtilsError
+/// Implement the From trait to convert std::io::Error and serde_json::Error into JsonUtilsError
 impl From<io::Error> for JsonUtilsError {
     fn from(err: io::Error) -> JsonUtilsError {
         JsonUtilsError::IoError(err)
@@ -29,33 +30,37 @@ impl From<serde_json::Error> for JsonUtilsError {
     }
 }
 
-// Reads a JSON file into a serde_json::Value
+/// Reads a JSON file into a serde_json::Value
 pub fn read_json(filename: &str) -> JsonUtilsResult<Value> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    // let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
+
+    // let path = app_local_data_dir()?;
+    // let path = PathResolver::app_data_dir();
+
     let file = File::open(&path)?;
     let value: Value = serde_json::from_reader(file)?;
     Ok(value)
 }
 
-// Writes a serde_json::Value to a JSON file
+/// Writes a serde_json::Value to a JSON file
 pub fn write_json(filename: &str, value: &Value) -> JsonUtilsResult<()> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
     let file = File::create(&path)?;
     serde_json::to_writer(file, value)?;
     Ok(())
 }
 
-// Deserialize a JSON file into a custom Rust type
+/// Deserialize a JSON file into a custom Rust type
 pub fn from_json_file<T: DeserializeOwned>(filename: &str) -> JsonUtilsResult<T> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
     let file = File::open(&path)?;
     let object: T = serde_json::from_reader(file)?;
     Ok(object)
 }
 
-// Serialize a custom Rust type into a JSON file
+/// Serialize a custom Rust type into a JSON file
 pub fn to_json_file<T: Serialize>(filename: &str, object: &T) -> JsonUtilsResult<()> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
     let file = File::create(&path)?;
     serde_json::to_writer(file, object)?;
     Ok(())
@@ -72,7 +77,7 @@ mod tests {
         age: u8,
     }
 
-    // Test reading and writing raw JSON
+    /// Test reading and writing raw JSON
     #[test]
     fn test_read_write_raw_json() -> JsonUtilsResult<()> {
         let filename = "test_raw.json";
@@ -89,12 +94,12 @@ mod tests {
         assert_eq!(value, read_value);
 
         // Cleanup
-        fs::remove_file(resolve_path(filename, Some(BaseDirectory::App))?)?;
+        fs::remove_file(resolve_path(filename, Some(BaseDirectory::AppLocalData))?)?;
 
         Ok(())
     }
 
-    // Test deserialization and serialization with custom Rust types
+    /// Test deserialization and serialization with custom Rust types
     #[test]
     fn test_serialize_deserialize_custom_type() -> JsonUtilsResult<()> {
         let filename = "test_custom.json";
@@ -111,7 +116,7 @@ mod tests {
         assert_eq!(test_struct, read_test_struct);
 
         // Cleanup
-        fs::remove_file(resolve_path(filename, Some(BaseDirectory::App))?)?;
+        fs::remove_file(resolve_path(filename, Some(BaseDirectory::AppLocalData))?)?;
 
         Ok(())
     }

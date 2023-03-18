@@ -4,62 +4,62 @@ use std::path::Path;
 use tauri::api::file::read_binary;
 use tauri::api::path::{resolve_path, BaseDirectory};
 
-// Define a result type for easier error handling
+/// Define a result type for easier error handling
 type FileUtilsResult<T> = Result<T, FileUtilsError>;
 
-// Define custom error type
+/// Define custom error type
 #[derive(Debug)]
 enum FileUtilsError {
     IoError(io::Error),
 }
 
-// Implement the From trait to convert std::io::Error into FileUtilsError
+/// Implement the From trait to convert std::io::Error into FileUtilsError
 impl From<io::Error> for FileUtilsError {
     fn from(err: io::Error) -> FileUtilsError {
         FileUtilsError::IoError(err)
     }
 }
 
-// Reads a file to a String
+/// Reads a file to a String
 pub fn read_to_string(filename: &str) -> FileUtilsResult<String> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
     let mut file = File::open(&path)?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
     Ok(contents)
 }
 
-// Writes a String to a file
+/// Writes a String to a file
 pub fn write_to_file(filename: &str, data: &str) -> FileUtilsResult<()> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
     let mut file = File::create(&path)?;
     file.write_all(data.as_bytes())?;
     Ok(())
 }
 
-// Deletes a file
+/// Deletes a file
 pub fn delete_file(filename: &str) -> FileUtilsResult<()> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
     fs::remove_file(path)?;
     Ok(())
 }
 
-// Reads a binary file
+/// Reads a binary file
 pub async fn read_binary_file(filename: &str) -> FileUtilsResult<Vec<u8>> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
     let data = read_binary(path).await?;
     Ok(data)
 }
 
-// Checks if a file exists
+/// Checks if a file exists
 pub fn file_exists(filename: &str) -> FileUtilsResult<bool> {
-    let path = resolve_path(filename, Some(BaseDirectory::App))?;
+    let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
     Ok(Path::new(&path).exists())
 }
 
-// Creates a directory
+/// Creates a directory
 pub fn create_directory(dirname: &str) -> FileUtilsResult<()> {
-    let path = resolve_path(dirname, Some(BaseDirectory::App))?;
+    let path = resolve_path(dirname, Some(BaseDirectory::AppLocalData))?;
     fs::create_dir_all(path)?;
     Ok(())
 }
@@ -69,7 +69,7 @@ mod tests {
     use super::*;
     use std::fs::File;
 
-    // Test for writing and reading a string to/from a file
+    /// Test for writing and reading a string to/from a file
     #[test]
     fn test_read_write_string_file() -> FileUtilsResult<()> {
         let filename = "test_read_write_string.txt";
@@ -88,14 +88,14 @@ mod tests {
         Ok(())
     }
 
-    // Test for writing and reading a binary file
+    /// Test for writing and reading a binary file
     #[tokio::test]
     async fn test_read_write_binary_file() -> FileUtilsResult<()> {
         let filename = "test_read_write_binary.bin";
         let content = vec![0x41, 0x42, 0x43, 0x44]; // ABCD in ASCII
 
         // Write to the file
-        let path = resolve_path(filename, Some(BaseDirectory::App))?;
+        let path = resolve_path(filename, Some(BaseDirectory::AppLocalData))?;
         let mut file = File::create(&path)?;
         file.write_all(&content)?;
 
@@ -109,7 +109,7 @@ mod tests {
         Ok(())
     }
 
-    // Test for file existence
+    /// Test for file existence
     #[test]
     fn test_file_exists() -> FileUtilsResult<()> {
         let filename = "test_file_exists.txt";
@@ -133,7 +133,7 @@ mod tests {
         Ok(())
     }
 
-    // Test for directory creation
+    /// Test for directory creation
     #[test]
     fn test_create_directory() -> FileUtilsResult<()> {
         let dirname = "test_create_directory";
@@ -142,7 +142,7 @@ mod tests {
         create_directory(dirname)?;
 
         // Verify directory exists
-        let path = resolve_path(dirname, Some(BaseDirectory::App))?;
+        let path = resolve_path(dirname, Some(BaseDirectory::AppLocalData))?;
         assert!(Path::new(&path).exists());
 
         // Clean up by removing directory
@@ -151,7 +151,7 @@ mod tests {
         Ok(())
     }
 
-    // Test for error handling
+    /// Test for error handling
     #[test]
     fn test_error_handling() {
         // Try reading a non-existent file
